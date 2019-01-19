@@ -1,3 +1,5 @@
 language: java
-
+java:
+  - "8"
+  - "11"
 script: java -version
