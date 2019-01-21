@@ -5,3 +5,9 @@ sudo: false
 cache:
   directories:
     - $HOME/.m2
+
+install:
+  - mvn test-compile -DskipTests=true -Dmaven.javadoc.skip=true -B -V
+script:
+  - mvn clean package
+
