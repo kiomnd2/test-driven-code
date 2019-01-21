@@ -1,1 +1,4 @@
-.idea/d
+.idea/*
+.idea
+./test-driven-code.lml
+./target/
