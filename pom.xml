@@ -39,7 +39,11 @@
             <version>2.23.4</version>
             <scope>test</scope>
         </dependency>
-
+        <dependency>
+            <groupId>com.googlecode.windowlicker</groupId>
+            <artifactId>windowlicker-swing</artifactId>
+            <version>r268</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
