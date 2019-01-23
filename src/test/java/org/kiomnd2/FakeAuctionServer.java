@@ -1,3 +1,5 @@
+package org.kiomnd2;
+
 import org.hamcrest.CoreMatchers;
 import org.jivesoftware.smack.*;
 import org.jivesoftware.smack.packet.Message;

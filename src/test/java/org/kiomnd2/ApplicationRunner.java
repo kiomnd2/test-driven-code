@@ -1,8 +1,9 @@
-import com.sun.tools.javac.Main;
-import org.hamcrest.CoreMatchers;
+package org.kiomnd2;
+
+import org.kiomnd2.java.Main;
 
 /*
-    ApplicationRunner - 테스트 러너
+    org.kiomnd2.ApplicationRunner - 테스트 러너
  */
 public class ApplicationRunner {
     public static final String SNIPER_ID ="sniper";
