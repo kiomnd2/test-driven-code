@@ -3,6 +3,7 @@ package org.kiomnd2;
 import org.hamcrest.CoreMatchers;
 import org.jivesoftware.smack.*;
 import org.jivesoftware.smack.packet.Message;
+import org.kiomnd2.java.Main;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -13,9 +14,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public class FakeAuctionServer {
     private final SingleMessageListener messageListener = new SingleMessageListener();
 
-    public static final String ITEM_ID_AS_LOGIN = "auction-%s";
-    public static final String AUCTION_RESOURCE = "Auction";
-    public static final String XMPP_HOSTNAME = "localhost";
+    public static final String XMPP_HOSTNAME = "openfie.antop.org";
     public static final String AUCTION_PASSWORD = "auction";
 
     private final String itemId;
@@ -30,7 +29,7 @@ public class FakeAuctionServer {
 
     public void startSellingItem() throws XMPPException {
         connection.connect();
-        connection.login(String.format(ITEM_ID_AS_LOGIN,itemId),AUCTION_PASSWORD, AUCTION_RESOURCE);
+        connection.login(String.format(Main.ITEM_ID_AS_LOGIN,itemId),AUCTION_PASSWORD, Main.AUCTION_RESOURCE);
         connection.getChatManager().addChatListener(
                 new ChatManagerListener() {
                     @Override

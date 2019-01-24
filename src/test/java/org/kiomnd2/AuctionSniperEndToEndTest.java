@@ -12,7 +12,14 @@ public class AuctionSniperEndToEndTest {
     public void testJoinAndNotBidding() throws Exception {
         //판매시작
         auction.startSellingItem();
-        //..........
+        //참여
+        application.startBiddingIn(auction);
+        //가입했오?
+        auction.hasReceivedJoinRequestFromSniper();
+        //문닫았어요
+        auction.announceClosed();
+        //ㅠ
+        application.showsSniperHasLostAuction();
 
     }
     @AfterEach
