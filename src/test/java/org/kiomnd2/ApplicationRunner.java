@@ -8,6 +8,7 @@ import org.kiomnd2.java.Main;
 public class ApplicationRunner {
     public static final String SNIPER_ID ="sniper";
     public static final String SNIPER_PASSWORD="sniper";
+    public static final String SNIPER_XMPP_ID ="sniper@antop.org/Auction";
 
     private AuctionSniperDriver driver;
 
@@ -26,6 +27,10 @@ public class ApplicationRunner {
         thread.start();
         driver = new AuctionSniperDriver(1000);
         driver.showsSniperStatus(Main.STATUS_JOINING); // STATUS_LOINING
+    }
+
+    public void hasShownSniperIsBidding() {
+        driver.showsSniperStatus(Main.STATUS_BIDDING);
     }
 
     public void showsSniperHasLostAuction() {
