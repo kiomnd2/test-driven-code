@@ -10,7 +10,7 @@ import javax.swing.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-public class Main {
+public class Main implements AuctionEventListener{
 
 
     public static final String JOIN_COMMAND_FORMAT = "SQLVersion: 1.1; Command: JOIN;";
@@ -50,24 +50,28 @@ public class Main {
         );
      }
 
-     public void joinAuction(XMPPConnection connection, String itemId) throws XMPPException{
+    @Override
+    public void currentPrice(int price, int increment) {
+
+    }
+
+    private void joinAuction(XMPPConnection connection, String itemId) throws XMPPException{
         disconnectWhenUICloses(connection);
         final Chat chat = connection.getChatManager().createChat(
                 auctionId(itemId, connection),
-                new MessageListener() {
-                    @Override
-                    public void processMessage(Chat aChat, Message message) {
-                        SwingUtilities.invokeLater(new Runnable() {
-                            @Override
-                            public void run() {
-                                ui.showStatus(STATUS_LOST);
-                            }
-                        });
-                    }
-                }
-        );
-        this.notToBeGCd = chat;
+                new AuctionMessageTranslator(this));
         chat.sendMessage(Main.JOIN_COMMAND_FORMAT);
+        this.notToBeGCd = chat;
+    }
+
+    @Override
+    public void auctionClosed() {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                ui.showStatus(Main.STATUS_LOST);
+            }
+        });
     }
 
     private void startUserInterface() throws Exception{
