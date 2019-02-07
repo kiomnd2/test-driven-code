@@ -6,9 +6,9 @@ import org.kiomnd2.java.Main;
     org.kiomnd2.ApplicationRunner - 테스트 러너
  */
 public class ApplicationRunner {
-    public static final String SNIPER_ID ="sniper";
+    public static final String SNIPER_ID ="sniper5";
     public static final String SNIPER_PASSWORD="sniper";
-    public static final String SNIPER_XMPP_ID ="sniper@antop.org/Auction";
+    public static final String SNIPER_XMPP_ID ="sniper5@antop.org/Auction";
 
     private AuctionSniperDriver driver;
 
@@ -36,6 +36,8 @@ public class ApplicationRunner {
     public void showsSniperHasLostAuction() {
         driver.showsSniperStatus(Main.STATUS_LOST); //STATUS_LOST
     }
+
+    public void hasShownSniperIsWinning() { driver.showsSniperStatus(Main.STATUS_WINNING); }
 
     public void stop() {
         if(driver != null){

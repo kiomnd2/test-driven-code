@@ -17,7 +17,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public class FakeAuctionServer {
     private final SingleMessageListener messageListener = new SingleMessageListener();
 
-    public static final String XMPP_HOSTNAME = "openfie.antop.org";
+    public static final String XMPP_HOSTNAME = "antop.org";
     public static final String AUCTION_PASSWORD = "auction";
 
     private final String itemId;

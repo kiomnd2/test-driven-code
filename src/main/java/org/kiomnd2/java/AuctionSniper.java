@@ -1,6 +1,7 @@
 package org.kiomnd2.java;
 
 public class AuctionSniper implements AuctionEventListener{
+    private boolean isWinning =false;
     private final SniperListener sniperListener;
     private final Auction auction;
 
@@ -11,12 +12,22 @@ public class AuctionSniper implements AuctionEventListener{
 
     @Override
     public void auctionClosed() {
-        sniperListener.sniperLost();
+        if(isWinning){
+            sniperListener.sniperWon();
+        }else{
+            sniperListener.sniperLost();
+        }
     }
     @Override
-    public void currentPrice(int price, int increment) {
-        auction.bid(price+increment);
-        sniperListener.sniperBidding();
+    public void currentPrice(int price, int increment, PriceSource priceSource) {
+        isWinning = priceSource == PriceSource.FromSniper;
+        if(isWinning){
+            sniperListener.sniperWinning();
+        }
+        else{
+            auction.bid(price+increment);
+            sniperListener.sniperBidding();
+        }
         // 자동 생성된 메서드 스텁
     }
 }
