@@ -29,6 +29,7 @@ public class Main{
 
     public final static String MAIN_WINDOW_NAME ="window";
     public static final String SNIPER_STATUS_NAME = "status-label";
+    public static final String SNIPER_TABLE_NAME = "Auction Sniper"
 
 
     public static final String STATUS_JOINING = "Joining";

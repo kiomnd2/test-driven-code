@@ -3,6 +3,7 @@ package org.kiomnd2;
 import com.objogate.wl.swing.AWTEventQueueProber;
 import com.objogate.wl.swing.driver.JFrameDriver;
 import com.objogate.wl.swing.driver.JLabelDriver;
+import com.objogate.wl.swing.driver.JTableDriver;
 import com.objogate.wl.swing.gesture.GesturePerformer;
 import org.hamcrest.CoreMatchers;
 import org.kiomnd2.java.Main;
@@ -18,8 +19,8 @@ public class AuctionSniperDriver extends JFrameDriver {
     }
 
     public void showsSniperStatus(String statusText) {
-        new JLabelDriver(
-                this, named(Main.SNIPER_STATUS_NAME)).hasText(CoreMatchers.equalTo(statusText)); //확인 
+        new JTableDriver(
+                this, hasCell(withLabelText(CoreMatchers.equalTo(statusText))); //확인
     }
 
 }
