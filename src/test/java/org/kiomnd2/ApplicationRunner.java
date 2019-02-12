@@ -1,6 +1,7 @@
 package org.kiomnd2;
 
 import org.kiomnd2.java.Main;
+import org.kiomnd2.java.MainWindow;
 
 /*
     org.kiomnd2.ApplicationRunner - 테스트 러너
@@ -10,9 +11,13 @@ public class ApplicationRunner {
     public static final String SNIPER_PASSWORD="sniper";
     public static final String SNIPER_XMPP_ID ="sniper5@antop.org/Auction";
 
+    private String itemId;
     private AuctionSniperDriver driver;
 
+
+
     public void startBiddingIn(final FakeAuctionServer auction)  {
+        itemId = auction.getItemId();
         Thread thread = new Thread("Test Application") {
             @Override
             public void run() {
@@ -29,15 +34,22 @@ public class ApplicationRunner {
         driver.showsSniperStatus(Main.STATUS_JOINING); // STATUS_LOINING
     }
 
-    public void hasShownSniperIsBidding() {
-        driver.showsSniperStatus(Main.STATUS_BIDDING);
+    public void hasShownSniperIsBidding(int lastPrice, int lastBid) {
+        driver.showsSniperStatus(itemId,lastPrice,lastBid, Main.STATUS_BIDDING);
+    }
+    public void hasShownSniperIsWinning(int winningBid) {
+        driver.showsSniperStatus(itemId, winningBid,winningBid, Main.STATUS_WINNING);
+    }
+
+    public void showsSniperHasWonAuction(int lastPrice) {
+        driver.showsSniperStatus(itemId, lastPrice, lastPrice, Main.STATUS_WON);
     }
 
     public void showsSniperHasLostAuction() {
-        driver.showsSniperStatus(Main.STATUS_LOST); //STATUS_LOST
+//        driver.showsSniperStatus(Main.STATUS_LOST); //STATUS_LOST
+        driver.showsSniperStatus(Main.STATUS_LOST);
     }
 
-    public void hasShownSniperIsWinning() { driver.showsSniperStatus(Main.STATUS_WINNING); }
 
     public void stop() {
         if(driver != null){

@@ -1,16 +1,15 @@
 package org.kiomnd2.java;
 
 import org.jivesoftware.smack.Chat;
-import org.jivesoftware.smack.MessageListener;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
-import org.jivesoftware.smack.packet.Message;
 
 import javax.swing.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 public class Main{
+    private  final SnipersTableModel snipers = new SnipersTableModel();
     private MainWindow ui;
 
     public static final String JOIN_COMMAND_FORMAT = "SOLVersion: 1.1; Command: JOIN;";
@@ -35,13 +34,19 @@ public class Main{
     public static final String STATUS_LOST = "Lost";
     public static final String STATUS_BIDDING = "Bidding";
     public static final String STATUS_WINNING = "Winning";
+
     public static final String STATUS_WON = "Won";
 
 
     @SuppressWarnings("unused") private Chat notToBeGCd;
 
     public Main() throws Exception{
-        startUserInterface();
+        SwingUtilities.invokeAndWait(new Runnable() {
+            @Override
+            public void run() {
+                ui = new MainWindow(snipers);
+            }
+        });
     }
 
     public static void main(String... arg) throws Exception {
@@ -63,21 +68,11 @@ public class Main{
         Auction auction = new XMPPAuction(chat) ;
 
         chat.addMessageListener(
-                new AuctionMessageTranslator(connection.getUser(), new AuctionSniper(auction , new SniperStateDisplayer())));
+                new AuctionMessageTranslator(connection.getUser(), new AuctionSniper(itemId ,auction , new SwingThreadSniperListener(snipers))));
         auction.join();
     }
 
 
-
-    private void startUserInterface() throws Exception{
-        SwingUtilities.invokeAndWait(new Runnable() {
-            @Override
-            public void run() {
-                ui = new MainWindow();
-            }
-        });
-
-    }
 
     private void disconnectWhenUICloses(final XMPPConnection connection) {
         ui.addWindowListener(new WindowAdapter() {
@@ -98,28 +93,6 @@ public class Main{
 
     private static String auctionId(String itemId, XMPPConnection connection){
         return String.format(AUCTION_ID_FORMAT, itemId,connection.getServiceName());
-    }
-
-    public class SniperStateDisplayer implements SniperListener {
-        public void sniperBidding() {
-            showState(Main.STATUS_BIDDING);
-        }
-        public void sniperLost() {
-            showState(Main.STATUS_LOST);
-        }
-        public void sniperWinning() {
-            showState(Main.STATUS_WINNING);
-        }
-        public void sniperWon() { showState(Main.STATUS_WON);}
-
-        private void showState(final String status) {
-            SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                    ui.showStatus(status);
-                }
-            });
-        }
     }
 
     // 중첩 클래스

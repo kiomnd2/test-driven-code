@@ -32,7 +32,6 @@ public class FakeAuctionServer {
     private void receivesAMessageMatching(String sniperId, Matcher<? super String> messageMatcher) throws InterruptedException{
         messageListener.receivesAMessage(messageMatcher);
         assertThat(currentChat.getParticipant(), CoreMatchers.equalTo(sniperId));
-
     }
 
 

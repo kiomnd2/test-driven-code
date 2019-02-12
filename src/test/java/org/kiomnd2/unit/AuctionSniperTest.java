@@ -1,21 +1,27 @@
 package org.kiomnd2.unit;
 
+import org.hamcrest.CoreMatchers;
+import org.hamcrest.FeatureMatcher;
+import org.hamcrest.Matcher;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.jmock.States;
 import org.junit.jupiter.api.Test;
-import org.kiomnd2.java.Auction;
-import org.kiomnd2.java.AuctionEventListener;
-import org.kiomnd2.java.AuctionSniper;
-import org.kiomnd2.java.SniperListener;
+import org.kiomnd2.java.*;
 import org.kiomnd2.java.AuctionEventListener.*;
+
+import static org.kiomnd2.java.SniperSnapshot.SniperState.*;
+import static org.kiomnd2.java.SniperSnapshot.*;
+
 
 public class AuctionSniperTest {
     private final Mockery context = new Mockery();
     private final Auction auction = context.mock(Auction.class);
     private final SniperListener sniperListener = context.mock(SniperListener.class);
-    private final AuctionSniper sniper= new AuctionSniper(auction,sniperListener);
     private final States sniperState =context.states("sniper5");
+    private final String ITEM_ID = "item-56789";
+    private final AuctionSniper sniper= new AuctionSniper(ITEM_ID,auction,sniperListener);
+
 
     @Test
     public void reportsLostWhenAuctionClosesImmediately() {
@@ -30,8 +36,11 @@ public class AuctionSniperTest {
     public void reportsLostIfAuctionClosesWhenBidding() {
         context.checking(new Expectations(){{
             ignoring(auction);
-            allowing(sniperListener).sniperBidding();
-                                        then(sniperState.is("bidding"));
+            allowing(sniperListener).sniperStateChanged(
+                    with(aSniperThatis(BIDDING))
+            );
+            then(sniperState.is("bidding"));
+
             atLeast(1).of(sniperListener).sniperLost();
             when(sniperState.is("bidding"));
         }});
@@ -42,9 +51,11 @@ public class AuctionSniperTest {
     public void bidsHigherAndReportsBiddingWhenNewPriceArrives() {
         final int price = 1001;
         final int increment = 25;
+        final int bid = price + increment;
+
         context.checking(new Expectations(){{
-            oneOf(auction).bid(price + increment);
-            atLeast(1).of(sniperListener).sniperBidding();
+            oneOf(auction).bid(bid);
+            atLeast(1).of(sniperListener).sniperStateChanged(new SniperSnapshot(ITEM_ID,price,bid, BIDDING));
         }});
 
         sniper.currentPrice(price,increment,PriceSource.FromOtherBidder);
@@ -53,19 +64,36 @@ public class AuctionSniperTest {
     @Test
     public void reportsIsWinningWhenCurrentPriceComesFromSniper() {
         context.checking(new Expectations(){{
-            atLeast(1).of(sniperListener).sniperWinning();
+            ignoring(auction);
+            allowing(sniperListener).sniperStateChanged(with(aSniperThatis(BIDDING)));
+            then(sniperState.is("bidding"));
+            atLeast(1).of(sniperListener).sniperStateChanged(new SniperSnapshot(ITEM_ID, 135,135,WINNING));
+            when(sniperState.is("bidding"));
         }});
-        sniper.currentPrice(123,45, PriceSource.FromSniper);
+        sniper.currentPrice(123,12, PriceSource.FromOtherBidder);
+        sniper.currentPrice(135,45, PriceSource.FromSniper);
     }
 
     @Test
     public void reportsWonIfAuctionClosesWhenWinning() {
         context.checking(new Expectations(){{
             ignoring(auction);
-            allowing(sniperListener).sniperWinning(); then(sniperState.is("winning"));
+            allowing(sniperListener).sniperStateChanged(new SniperSnapshot(ITEM_ID,123,45,WINNING)); then(sniperState.is("winning"));
             atLeast(1).of(sniperListener).sniperWon(); when(sniperState.is("winning"));
         }});
         sniper.currentPrice(123,45,PriceSource.FromSniper);
         sniper.auctionClosed();
     }
+
+    private Matcher<SniperSnapshot> aSniperThatis(final SniperState state) {
+        return new FeatureMatcher<SniperSnapshot, SniperState>(
+                CoreMatchers.equalTo(state), "sniper that is ","was"){
+            @Override
+            protected SniperState featureValueOf(SniperSnapshot actual) {
+                return actual.state;
+            }
+        };
+
+    }
+
 }
