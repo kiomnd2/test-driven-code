@@ -13,6 +13,7 @@ import static org.hamcrest.CoreMatchers.anything;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.beans.HasPropertyWithValue.hasProperty;
 
 public class FakeAuctionServer {
     private final SingleMessageListener messageListener = new SingleMessageListener();
@@ -37,7 +38,7 @@ public class FakeAuctionServer {
 
     public void startSellingItem() throws XMPPException {
         connection.connect();
-        connection.login(String.format(Main.ITEM_ID_AS_LOGIN,itemId),AUCTION_PASSWORD, Main.AUCTION_RESOURCE);
+        connection.login(String.format(Main.ITEM_ID_AS_LOGIN, getItemId()),AUCTION_PASSWORD, Main.AUCTION_RESOURCE);
         connection.getChatManager().addChatListener(
                 new ChatManagerListener() {
                     @Override
@@ -89,8 +90,7 @@ public class FakeAuctionServer {
 
         public void receivesAMessage(Matcher<? super String> messageMatcher) throws InterruptedException {
             final Message message = messages.poll(5, TimeUnit.SECONDS);
-            assertThat("Message",message, is(CoreMatchers.notNullValue()));
-            assertThat(message.getBody(), messageMatcher);
+            assertThat(message, hasProperty("body",messageMatcher));
         }
 
     }

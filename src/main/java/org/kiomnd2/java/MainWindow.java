@@ -10,9 +10,8 @@ public class MainWindow extends JFrame {
     static public final String SNIPERS_TABLE_NAME = "snipers table";
     static public final String APPLICATION_TITLE = "Auction Sniper";
     private SnipersTableModel snipers;
-
-
     private final JLabel sniperStatus = createLabel(Main.STATUS_JOINING);
+
     public MainWindow(SnipersTableModel snipers){
         super(APPLICATION_TITLE);
         setName(Main.MAIN_WINDOW_NAME);
