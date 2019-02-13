@@ -10,12 +10,12 @@ public class AuctionSniper implements AuctionEventListener{
 
         this.auction = auction;
         this.sniperListener = sniperListener;
-        this.snapshot = snapshot.joining(itemId);
+        this.snapshot = SniperSnapshot.joining(itemId);
     }
     @Override
     public void auctionClosed() {
         snapshot = snapshot.closed();
-        nofityChange();
+        notifyChange();
     }
     @Override
     public void currentPrice(int price, int increment, PriceSource priceSource) {
@@ -29,11 +29,11 @@ public class AuctionSniper implements AuctionEventListener{
                 snapshot = snapshot.bidding(price,bid);
                 break;
         }
-        nofityChange();
+        notifyChange();
 
         // 자동 생성된 메서드 스텁
     }
-    private void nofityChange() {
+    private void notifyChange() {
         sniperListener.sniperStateChanged(snapshot);
 
     }

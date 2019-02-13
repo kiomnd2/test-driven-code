@@ -7,14 +7,16 @@ import java.awt.*;
 
 
 public class MainWindow extends JFrame {
-    private final SnipersTableModel snipers ;
+    static public final String SNIPERS_TABLE_NAME = "snipers table";
+    static public final String APPLICATION_TITLE = "Auction Sniper";
+    private SnipersTableModel snipers;
 
 
     private final JLabel sniperStatus = createLabel(Main.STATUS_JOINING);
     public MainWindow(SnipersTableModel snipers){
-        super("Action Sniper");
-        this.snipers = snipers;
+        super(APPLICATION_TITLE);
         setName(Main.MAIN_WINDOW_NAME);
+        this.snipers = snipers;
         fillContentPane(makeSniperTable());
         pack();
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -32,10 +34,6 @@ public class MainWindow extends JFrame {
         snipersTable.setName("SNIPER Table");
         return snipersTable;
     }
-    public void showStatusText(String statusText) {
-        snipers.setStatusText(statusText);
-    }
-
 
 
     private static JLabel createLabel(String initialText) {
@@ -43,13 +41,6 @@ public class MainWindow extends JFrame {
         result.setName(Main.SNIPER_STATUS_NAME);
         result.setBorder(new LineBorder(Color.BLACK));
         return result;
-    }
-    public void showStatus(String status){
-        sniperStatus.setText(status);
-    }
-
-    public void sniperStatusChanged(SniperSnapshot snapshot) {
-        snipers.sniperStatusChanged(snapshot);
     }
 
 

@@ -1,17 +1,22 @@
 package org.kiomnd2.java;
 
+
 import javax.swing.*;
 
 public class SwingThreadSniperListener implements SniperListener{
-    private final SnipersTableModel snipers;
+    private SniperListener listener;
 
-    public SwingThreadSniperListener(SnipersTableModel snipers) {
-        this.snipers = snipers;
+    public SwingThreadSniperListener(SniperListener listener) {
+        this.listener = listener;
     }
 
     @Override
-    public void sniperStateChanged(SniperSnapshot snapshot) {
-        snipers.sniperStatusChanged(snapshot);
+    public void sniperStateChanged(final SniperSnapshot snapshot) {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                    listener.sniperStateChanged(snapshot);
+            }
+        });
     }
-
 }

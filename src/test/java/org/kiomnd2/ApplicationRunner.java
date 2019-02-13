@@ -1,7 +1,9 @@
 package org.kiomnd2;
 
-import org.kiomnd2.java.Main;
-import org.kiomnd2.java.MainWindow;
+import org.kiomnd2.java.*;
+
+import static org.kiomnd2.java.SniperSnapshot.SniperState.JOINING;
+
 
 /*
     org.kiomnd2.ApplicationRunner - 테스트 러너
@@ -13,8 +15,6 @@ public class ApplicationRunner {
 
     private String itemId;
     private AuctionSniperDriver driver;
-
-
 
     public void startBiddingIn(final FakeAuctionServer auction)  {
         itemId = auction.getItemId();
@@ -31,7 +31,9 @@ public class ApplicationRunner {
         thread.setDaemon(true); // 데몬세팅
         thread.start();
         driver = new AuctionSniperDriver(1000);
-        driver.showsSniperStatus(Main.STATUS_JOINING); // STATUS_LOINING
+        driver.hasTitle(MainWindow.APPLICATION_TITLE);
+        driver.hasColumnTitles();
+//        driver.showsSniperStatus(itemId,0,0, SnipersTableModel.textFor(JOINING)); // STATUS_LOINING
     }
 
     public void hasShownSniperIsBidding(int lastPrice, int lastBid) {
