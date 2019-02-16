@@ -4,6 +4,10 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 public class AuctionSniperEndToEndTest {
+    static {
+        System.setProperty("com.objogate.wl.keyboard", "GB");
+    }
+
     private final FakeAuctionServer auction = new FakeAuctionServer("item-56789");
     private final FakeAuctionServer auction2 = new FakeAuctionServer("item-67890");
     private final ApplicationRunner application = new ApplicationRunner();
@@ -83,7 +87,7 @@ public class AuctionSniperEndToEndTest {
         auction2.hasReceivedBid(521, ApplicationRunner.SNIPER_XMPP_ID);
 
         auction.reportPrice(1098,97, ApplicationRunner.SNIPER_XMPP_ID);
-        auction2.reportPrice(512,22, ApplicationRunner.SNIPER_XMPP_ID);
+        auction2.reportPrice(521,22, ApplicationRunner.SNIPER_XMPP_ID);
 
         application.hasShownSniperIsWinning(auction,1098);
         application.hasShownSniperIsWinning(auction2, 521);

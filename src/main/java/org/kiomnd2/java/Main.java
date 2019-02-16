@@ -40,7 +40,7 @@ public class Main{
     public static final String STATUS_WON = "Won";
 
 
-    @SuppressWarnings("unused") private ArrayList<Chat> notToBeGCd = new ArrayList<>();
+    @SuppressWarnings("unused") private ArrayList<Auction> notToBeGCd = new ArrayList<>();
 
     public Main() throws Exception{
         SwingUtilities.invokeAndWait(new Runnable() {
@@ -55,36 +55,10 @@ public class Main{
         Main main = new Main();
         XMPPConnection connection = connection(args[ARG_HOSTNAME],args[ARG_USERNAME],args[ARG_PASSWORD]);
         main.disconnectWhenUICloses(connection);
-
-        for( int i =3 ; i< args.length ; i++){
-            main.joinAuction(connection, args[i]);
-        }
+        main.addUserRequestListenerFor(connection);
 
      }
 
-
-    private void joinAuction(XMPPConnection connection, String itemId) throws Exception{
-        safelyAddItemToModel(itemId);
-        disconnectWhenUICloses(connection);
-        final Chat chat = connection.getChatManager().createChat(
-                auctionId(itemId, connection),
-                null);
-        notToBeGCd.add(chat);
-        Auction auction = new XMPPAuction(chat) ;
-
-        chat.addMessageListener(
-                new AuctionMessageTranslator(connection.getUser(), new AuctionSniper(itemId ,auction , new SwingThreadSniperListener(snipers))));
-        auction.join();
-    }
-
-    private void safelyAddItemToModel(final String itemId) throws Exception {
-        SwingUtilities.invokeAndWait(new Runnable() {
-            @Override
-            public void run() {
-                snipers.addSniper(SniperSnapshot.joining(itemId));
-            }
-        });
-    }
 
 
     private void disconnectWhenUICloses(final XMPPConnection connection) {
@@ -95,6 +69,38 @@ public class Main{
             }
         });
 
+    }
+
+    private void addUserRequestListenerFor(final XMPPConnection connection) {
+        ui.addUserRequestListener(new UserRequestListener() {
+            @Override
+            public void joinAuction(String itemId) {
+                snipers.addSniper(SniperSnapshot.joining(itemId));
+                Auction auction = new XMPPAuction(connection,itemId);
+                notToBeGCd.add(auction);
+
+
+
+
+
+                /*
+                snipers.addSniper(SniperSnapshot.joining(itemId));
+                Chat chat = connection.getChatManager()
+                        .createChat(auctionId(itemId, connection),null);
+                Announcer<AuctionEventListener> auctionEventListeners = Announcer.to(AuctionEventListener.class);
+                chat.addMessageListener(new AuctionMessageTranslator(
+                        connection.getUser(),
+                        auctauction.addAuctionEvionEventListeners.announce()
+                ));
+                notToBeGCd.add(chat);
+                Auction auction = new XMPPAuction(chat);
+                auctionEventListeners.addListener(
+                        new AuctionSniper(itemId, auction,
+                                new SwingThreadSniperListener(snipers))
+                );
+                auction.join();*/
+            }
+        });
     }
 
     private static XMPPConnection connection(String hostname, String username, String password) throws XMPPException {
@@ -111,7 +117,19 @@ public class Main{
     // 중첩 클래스
     public static class XMPPAuction implements Auction {
         private final Chat chat;
+        private final Announcer<AuctionEventListener> auctionEventListeners= Announcer.to(AuctionEventListener.class);
 
+
+        public XMPPAuction(XMPPConnection connection, String itemId) {
+            chat = connection.getChatManager().createChat(
+                    auctionId(itemId,connection),
+                    new AuctionMessageTranslator(connection.getUser(),
+                            auctionEventListeners.announce())
+            );
+        }
+        private static String auctionId(String itemId, XMPPConnection connection) {
+            return String.format(AUCTION_ID_FORMAT, itemId, connection.getServiceName());
+        }
         public XMPPAuction(Chat chat) {
             this.chat = chat;
         }

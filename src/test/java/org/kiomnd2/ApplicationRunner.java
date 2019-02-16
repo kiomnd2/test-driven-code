@@ -18,28 +18,23 @@ public class ApplicationRunner {
     private String itemId;
     private AuctionSniperDriver driver;
 
-    public void startBiddingIn(final FakeAuctionServer... auctions)  {
-        Thread thread = new Thread("Test Application") {
-            @Override
-            public void run() {
-                try{ // 메인클래스 접근, 후 서버 접근
-                    Main.main(arguments(auctions));
-                }catch(Exception e){
-                    e.printStackTrace();
-                }
-            }
-        };
+    public void startBiddingIn(final FakeAuctionServer... auctions) throws Exception {
+        startSniper();
 
-        thread.setDaemon(true); // 데몬세팅
-        thread.start();
         driver = new AuctionSniperDriver(1000);
         driver.hasTitle(MainWindow.APPLICATION_TITLE);
         driver.hasColumnTitles();
-
-        for( FakeAuctionServer auction : auctions) {
-            driver.showsSniperStatus(auction.getItemId(),0,0, textFor(JOINING));
+        for ( FakeAuctionServer auction : auctions){
+            final String itemId = auction.getItemId();
+            driver.startBiddingFor(itemId);
+            driver.showsSniperStatus(itemId,0,0,textFor(JOINING));
         }
 
+
+    }
+
+    private void startSniper() throws Exception {
+        Main.main(FakeAuctionServer.XMPP_HOSTNAME,SNIPER_ID,SNIPER_PASSWORD);
     }
 
     protected static String[] arguments(FakeAuctionServer... auctions) {
