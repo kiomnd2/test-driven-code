@@ -1,5 +1,7 @@
 package org.kiomnd2.java;
 
-public interface SniperListener {
+import java.util.EventListener;
+
+public interface SniperListener extends EventListener {
     void sniperStateChanged(SniperSnapshot snapshot);
 }

@@ -3,20 +3,29 @@ package org.kiomnd2.java;
 public class AuctionSniper implements AuctionEventListener{
     private boolean isWinning =false;
     private SniperSnapshot snapshot;
-    private final SniperListener sniperListener;
     private final Auction auction;
+    private final Item item;
+    private final Announcer<SniperListener> listeners = Announcer.to(SniperListener.class);
 
-    public AuctionSniper(String itemId, Auction auction ,SniperListener sniperListener){
-
+    public AuctionSniper(Item item, Auction auction){
+        this.item = item;
         this.auction = auction;
-        this.sniperListener = sniperListener;
-        this.snapshot = SniperSnapshot.joining(itemId);
+        this.snapshot = SniperSnapshot.joining(item);
     }
+
     @Override
     public void auctionClosed() {
         snapshot = snapshot.closed();
         notifyChange();
     }
+
+    @Override
+    public void auctionFailed() {
+//        snapshot = snapshot.failed();
+
+        notifyChange();
+    }
+
     @Override
     public void currentPrice(int price, int increment, PriceSource priceSource) {
         switch(priceSource){
@@ -34,7 +43,14 @@ public class AuctionSniper implements AuctionEventListener{
         // 자동 생성된 메서드 스텁
     }
     private void notifyChange() {
-        sniperListener.sniperStateChanged(snapshot);
+        listeners.announce().sniperStateChanged(snapshot);
+    }
 
+    public void addSniperListener(SniperListener listener) {
+        listeners.addListener(listener);
+    }
+
+    public SniperSnapshot getSnapshot() {
+        return snapshot;
     }
 }

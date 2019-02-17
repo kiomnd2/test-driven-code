@@ -4,16 +4,16 @@ import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matcher;
 import org.jivesoftware.smack.*;
 import org.jivesoftware.smack.packet.Message;
-import org.kiomnd2.java.Main;
+import org.kiomnd2.java.XMPPAuctionHouse;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-import static org.hamcrest.CoreMatchers.anything;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.beans.HasPropertyWithValue.hasProperty;
+import static org.kiomnd2.java.XMPPAuction.JOIN_COMMAND_FORMAT;
 
 public class FakeAuctionServer {
     private final SingleMessageListener messageListener = new SingleMessageListener();
@@ -38,7 +38,7 @@ public class FakeAuctionServer {
 
     public void startSellingItem() throws XMPPException {
         connection.connect();
-        connection.login(String.format(Main.ITEM_ID_AS_LOGIN, getItemId()),AUCTION_PASSWORD, Main.AUCTION_RESOURCE);
+        connection.login(String.format(XMPPAuctionHouse.ITEM_ID_AS_LOGIN, getItemId()),AUCTION_PASSWORD, XMPPAuctionHouse.AUCTION_RESOURCE);
         connection.getChatManager().addChatListener(
                 new ChatManagerListener() {
                     @Override
@@ -54,7 +54,7 @@ public class FakeAuctionServer {
     }
 
     public void hasReceivedJoinRequestFrom(String sniperId) throws InterruptedException {
-        receivesAMessageMatching(sniperId, equalTo(Main.JOIN_COMMAND_FORMAT)); //Main.JOIN_COMMNAND_FORMAT
+        receivesAMessageMatching(sniperId, equalTo(JOIN_COMMAND_FORMAT)); //Main.JOIN_COMMNAND_FORMAT
     }
 
     public void hasReceivedJoinRequestFromSniper() throws InterruptedException {

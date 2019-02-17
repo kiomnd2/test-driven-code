@@ -8,10 +8,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class SnipersTableModel extends AbstractTableModel implements SniperListener{
+public class SnipersTableModel extends AbstractTableModel implements SniperListener, PortfolioListener{
 
-    private static String[] STATUS_TEXT = {"Joining","Bidding", "Winning","Lost", "Won" };
+    private static String[] STATUS_TEXT = {"Joining","Bidding", "Winning","Lost", "Won","Losing" };
     private List<SniperSnapshot> sniperSnapshots = new ArrayList<>();
+    private final ArrayList<AuctionSniper> notToBeGCd = new ArrayList<>();
 
     @Override
     public String getColumnName(int column) {
@@ -52,5 +53,16 @@ public class SnipersTableModel extends AbstractTableModel implements SniperListe
         return STATUS_TEXT[state.ordinal()];
     }
 
+    @Override
+    public void sniperAdded(AuctionSniper sniper) {
+        notToBeGCd.add(sniper);
+        addSniperSnapshot(sniper.getSnapshot());
+        sniper.addSniperListener(new SwingThreadSniperListener(this));
 
+    }
+    private void addSniperSnapshot(SniperSnapshot sniperSnapshot){
+        sniperSnapshots.add(sniperSnapshot);
+        int row = sniperSnapshots.size() -1 ;
+        fireTableRowsInserted(row, row);
+    }
 }

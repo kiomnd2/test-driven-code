@@ -3,7 +3,7 @@ package org.kiomnd2;
 import org.kiomnd2.java.*;
 
 import static org.kiomnd2.FakeAuctionServer.XMPP_HOSTNAME;
-import static org.kiomnd2.java.SniperSnapshot.SniperState.JOINING;
+import static org.kiomnd2.java.SniperSnapshot.SniperState.*;
 import static org.kiomnd2.java.SnipersTableModel.textFor;
 
 
@@ -20,13 +20,9 @@ public class ApplicationRunner {
 
     public void startBiddingIn(final FakeAuctionServer... auctions) throws Exception {
         startSniper();
-
-        driver = new AuctionSniperDriver(1000);
-        driver.hasTitle(MainWindow.APPLICATION_TITLE);
-        driver.hasColumnTitles();
         for ( FakeAuctionServer auction : auctions){
             final String itemId = auction.getItemId();
-            driver.startBiddingFor(itemId);
+            driver.startBiddingFor(itemId,Integer.MAX_VALUE);
             driver.showsSniperStatus(itemId,0,0,textFor(JOINING));
         }
 
@@ -35,6 +31,9 @@ public class ApplicationRunner {
 
     private void startSniper() throws Exception {
         Main.main(FakeAuctionServer.XMPP_HOSTNAME,SNIPER_ID,SNIPER_PASSWORD);
+        driver = new AuctionSniperDriver(1000);
+        driver.hasTitle(MainWindow.APPLICATION_TITLE);
+        driver.hasColumnTitles();
     }
 
     protected static String[] arguments(FakeAuctionServer... auctions) {
@@ -50,20 +49,30 @@ public class ApplicationRunner {
     }
 
     public void hasShownSniperIsBidding(FakeAuctionServer auction,int lastPrice, int lastBid) {
-        driver.showsSniperStatus(auction.getItemId(),lastPrice,lastBid, Main.STATUS_BIDDING);
+        driver.showsSniperStatus(auction.getItemId(),lastPrice,lastBid, SnipersTableModel.textFor(BIDDING));
     }
     public void hasShownSniperIsWinning(FakeAuctionServer auction, int winningBid) {
-        driver.showsSniperStatus(auction.getItemId(), winningBid,winningBid, Main.STATUS_WINNING);
+        driver.showsSniperStatus(auction.getItemId(), winningBid,winningBid,SnipersTableModel.textFor(WINNING));
+    }
+    public void hasShownSniperIsLosing(FakeAuctionServer auction, int lastPrice, int lastBid) {
+        driver.showsSniperStatus(auction.getItemId(), lastPrice, lastBid, SnipersTableModel.textFor(LOSING));
     }
 
     public void showsSniperHasWonAuction(FakeAuctionServer auction,int lastPrice) {
-        driver.showsSniperStatus(auction.getItemId() , lastPrice, lastPrice, Main.STATUS_WON);
+        driver.showsSniperStatus(auction.getItemId() , lastPrice, lastPrice, SnipersTableModel.textFor(WON));
     }
 
-    public void showsSniperHasLostAuction() {
-//        driver.showsSniperStatus(Main.STATUS_LOST); //STATUS_LOST
-        driver.showsSniperStatus(Main.STATUS_LOST);
+    public void hasShownSniperHasLostAuction(FakeAuctionServer auction, int lastPrice, int lastBid) {
+        driver.showsSniperStatus(auction.getItemId(), lastPrice, lastBid, SnipersTableModel.textFor(LOST));
     }
+
+    public void startBiddingWithStopPrice(FakeAuctionServer auction, int stopPrice) throws Exception {
+        startSniper();
+        driver.startBiddingFor(auction.getItemId() , stopPrice);
+        driver.showsSniperStatus(auction.getItemId(),0,0, SnipersTableModel.textFor(JOINING));
+    }
+
+
 
 
     public void stop() {
@@ -72,4 +81,6 @@ public class ApplicationRunner {
         }
 
     }
+
+
 }

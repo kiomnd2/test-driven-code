@@ -7,7 +7,7 @@ import org.jmock.Mockery;
 import org.junit.jupiter.api.Test;
 import org.kiomnd2.ApplicationRunner;
 import org.kiomnd2.java.AuctionEventListener;
-import org.kiomnd2.java.AuctionEventListener.*;
+import org.kiomnd2.java.AuctionEventListener.PriceSource;
 import org.kiomnd2.java.AuctionMessageTranslator;
 
 public class AuctionMessageTranslatorTest {

@@ -1,22 +1,22 @@
 package org.kiomnd2.unit;
 
-import com.sun.org.apache.xerces.internal.impl.xpath.regex.Match;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matcher;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.junit.Before;
 import org.junit.Test;
-import org.kiomnd2.java.*;
+import org.kiomnd2.java.Column;
+import org.kiomnd2.java.Item;
+import org.kiomnd2.java.SniperSnapshot;
+import org.kiomnd2.java.SnipersTableModel;
 
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
-import javax.swing.table.TableModel;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.kiomnd2.java.SniperSnapshot.SniperState.BIDDING;
 
 public class SnipersTableModelTest {
     private final Mockery context = new Mockery();
@@ -36,7 +36,7 @@ public class SnipersTableModelTest {
 
     @Test
     public void setsSniperValueInColumns() {
-        SniperSnapshot joining = SniperSnapshot.joining("item id");
+        SniperSnapshot joining = SniperSnapshot.joining(new Item("item 1", 555));
         SniperSnapshot bidding = joining.bidding(555,666);
         context.checking(new Expectations(){{
             allowing(listener).tableChanged(with(anyInsertionEvent()));
@@ -60,7 +60,7 @@ public class SnipersTableModelTest {
 
     @Test
     public void notifiesListenersWhenAddinASniper() {
-        SniperSnapshot joining = SniperSnapshot.joining("item123");
+        SniperSnapshot joining = SniperSnapshot.joining(new Item("item 1", 5678));
         context.checking(new Expectations(){{
             oneOf(listener).tableChanged(with(anInsertionAtRow(0)));
         }});
@@ -79,8 +79,8 @@ public class SnipersTableModelTest {
             ignoring(listener);
         }});
 
-        model.addSniper(SniperSnapshot.joining("item 0"));
-        model.addSniper(SniperSnapshot.joining("item 1"));
+        model.addSniper(SniperSnapshot.joining(new Item("item 0", 1234)));
+        model.addSniper(SniperSnapshot.joining(new Item("item 1", 1234)));
 
         assertEquals("item 0", cellValue(0, Column.ITEM_IDENTIFIER));
         assertEquals("item 1", cellValue(1, Column.ITEM_IDENTIFIER));
@@ -108,7 +108,7 @@ public class SnipersTableModelTest {
     }
 
     private void assertRowMatchesSnapshot(int row, SniperSnapshot snapshot) {
-        assertEquals( snapshot.itemId, cellValue(row, Column.ITEM_IDENTIFIER));
+        assertEquals( snapshot.item.getIdentifier(), cellValue(row, Column.ITEM_IDENTIFIER));
         assertEquals( snapshot.lastPrice, cellValue(row, Column.LAST_PRICE));
         assertEquals( snapshot.lastBid, cellValue(row, Column.LAST_BID));
         assertEquals( SnipersTableModel.textFor(snapshot.state), cellValue(row, Column.SNIPER_STATUS));

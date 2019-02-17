@@ -17,14 +17,13 @@ public class AuctionSniperEndToEndTest {
     public void testJoinAndNotBidding() throws Exception {
         //판매시작
         auction.startSellingItem();
-        //참여
         application.startBiddingIn(auction);
-        //가입했오?
+
         auction.hasReceivedJoinRequestFromSniper();
-        //문닫았어요
+
         auction.announceClosed();
-        //ㅠ
-        application.showsSniperHasLostAuction();
+
+        application.hasShownSniperHasLostAuction(auction,0,0);
 
     }
     @Test
@@ -43,7 +42,7 @@ public class AuctionSniperEndToEndTest {
 
         auction.announceClosed();
 
-        application.showsSniperHasLostAuction();
+        application.hasShownSniperHasLostAuction(auction, 1000,1098);
     }
 
     @Test
@@ -97,6 +96,28 @@ public class AuctionSniperEndToEndTest {
 
         application.showsSniperHasWonAuction(auction, 1098);
         application.showsSniperHasWonAuction(auction2, 521);
+
+    }
+
+    //실패 테스트
+    @Test
+    public void sniperLosesAnAuctionWhenThePriceIsToohigh() throws Exception {
+        auction.startSellingItem();
+        application.startBiddingWithStopPrice(auction,1100);
+        auction.hasReceivedJoinRequestFrom(ApplicationRunner.SNIPER_XMPP_ID);
+        auction.reportPrice(1000 ,98,"other bidder");
+        application.hasShownSniperIsBidding(auction,1000,1098);
+
+        auction.hasReceivedBid(1098,ApplicationRunner.SNIPER_XMPP_ID);
+        auction.reportPrice(1197, 10, "third party");
+        application.hasShownSniperIsLosing(auction,1197,1098);
+
+        auction.reportPrice(1207, 10, "fourth party");
+        application.hasShownSniperIsLosing(auction,1207,1098);
+
+        auction.announceClosed();
+
+        application.hasShownSniperHasLostAuction(auction,1207,1098 );
 
     }
 
