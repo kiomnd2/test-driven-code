@@ -36,7 +36,7 @@ public class SnipersTableModelTest {
 
     @Test
     public void setsSniperValueInColumns() {
-        SniperSnapshot joining = SniperSnapshot.joining(new Item("item 1", 555));
+        SniperSnapshot joining = SniperSnapshot.joining("item1");
         SniperSnapshot bidding = joining.bidding(555,666);
         context.checking(new Expectations(){{
             allowing(listener).tableChanged(with(anyInsertionEvent()));
@@ -60,7 +60,7 @@ public class SnipersTableModelTest {
 
     @Test
     public void notifiesListenersWhenAddinASniper() {
-        SniperSnapshot joining = SniperSnapshot.joining(new Item("item 1", 5678));
+        SniperSnapshot joining = SniperSnapshot.joining("item1");
         context.checking(new Expectations(){{
             oneOf(listener).tableChanged(with(anInsertionAtRow(0)));
         }});
@@ -79,11 +79,11 @@ public class SnipersTableModelTest {
             ignoring(listener);
         }});
 
-        model.addSniper(SniperSnapshot.joining(new Item("item 0", 1234)));
-        model.addSniper(SniperSnapshot.joining(new Item("item 1", 1234)));
+        model.addSniper(SniperSnapshot.joining("item0"));
+        model.addSniper(SniperSnapshot.joining("item1"));
 
-        assertEquals("item 0", cellValue(0, Column.ITEM_IDENTIFIER));
-        assertEquals("item 1", cellValue(1, Column.ITEM_IDENTIFIER));
+        assertEquals("item0", cellValue(0, Column.ITEM_IDENTIFIER));
+        assertEquals("item1", cellValue(1, Column.ITEM_IDENTIFIER));
     }
 
 
@@ -108,7 +108,7 @@ public class SnipersTableModelTest {
     }
 
     private void assertRowMatchesSnapshot(int row, SniperSnapshot snapshot) {
-        assertEquals( snapshot.item.getIdentifier(), cellValue(row, Column.ITEM_IDENTIFIER));
+        assertEquals( snapshot.item, cellValue(row, Column.ITEM_IDENTIFIER));
         assertEquals( snapshot.lastPrice, cellValue(row, Column.LAST_PRICE));
         assertEquals( snapshot.lastBid, cellValue(row, Column.LAST_BID));
         assertEquals( SnipersTableModel.textFor(snapshot.state), cellValue(row, Column.SNIPER_STATUS));

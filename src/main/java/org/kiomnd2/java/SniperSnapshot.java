@@ -3,12 +3,12 @@ package org.kiomnd2.java;
 import com.objogate.exception.Defect;
 
 public class SniperSnapshot {
-    public final Item item ;
+    public final String item ;
     public final int lastPrice;
     public final int lastBid;
     public final SniperState state;
 
-    public SniperSnapshot(Item item, int lastPrice, int lastBid, SniperState state){
+    public SniperSnapshot(String item, int lastPrice, int lastBid, SniperState state){
         this.item = item;
         this.lastPrice = lastPrice;
         this.lastBid = lastBid;
@@ -23,12 +23,16 @@ public class SniperSnapshot {
         return new SniperSnapshot(item, newLastPrice, newLastPrice, SniperState.WINNING);
     }
 
-    public static SniperSnapshot joining(Item item) {
+    public static SniperSnapshot joining(String item) {
         return new SniperSnapshot(item, 0, 0, SniperState.JOINING);
     }
 
     public SniperSnapshot closed() {
         return new SniperSnapshot(item,lastPrice,lastBid, state.whenAuctionClosed());
+    }
+
+    public SniperSnapshot losing(int newLastPrice) {
+        return new SniperSnapshot(item, newLastPrice,lastBid, SniperState.LOSING);
     }
 
     public boolean isForSameItemAs(SniperSnapshot snapshot) {

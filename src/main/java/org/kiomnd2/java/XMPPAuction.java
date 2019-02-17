@@ -27,12 +27,10 @@ public class XMPPAuction implements Auction {
 
             @Override
             public void auctionClosed() {
-                // do nothing
             }
 
             @Override
             public void currentPrice(int price, int increment, PriceSource priceSource) {
-                // do nothing
             }
         };
     }
